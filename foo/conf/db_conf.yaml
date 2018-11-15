@@ -1,0 +1,20 @@
+mysql :
+  db_list:
+  - {
+      name : bj-sjs-001-tidb,
+      type : mysql,
+      user : root,
+      password : root,
+      host: bj-sjs-001,
+      port : 4000,
+      db : test
+    }
+  - {
+    name: bj-sjs-001,
+    type: mysql,
+    user: root,
+    password: root,
+    host: spark003,
+    port: 3306,
+    db : test
+  }
