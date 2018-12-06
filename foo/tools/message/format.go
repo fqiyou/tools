@@ -10,10 +10,19 @@ import (
 	"strconv"
 )
 
+type MessageStruct struct {
+	HeaderSize int64 	`json:"header_size"`
+	HeaderStr	string 	`json:"header_str"`
+	BodyStr		string 	`json:"body_str"`
+}
+
+
+var ERRORSLICEOUTOFRANGE = errors.New("slice bounds out of range");
 
 // 将message字符串封装成message对象,解base64,gz
-func FormatMessage(message string)  (Message, error){
-	message_struts := new(Message)
+func FormatMessage(message string)  (MessageStruct, error){
+	message_struts := new(MessageStruct)
+
 	decode_message,err := base64.StdEncoding.DecodeString(message)
 	if err != nil {
 		return *message_struts,err
@@ -49,7 +58,7 @@ func FormatMessage(message string)  (Message, error){
 	return *message_struts,nil
 }
 
-func FormatMessageObject(message string) (message_struts Message, message_error error){
+func FormatMessageObject(message string) (message_struts MessageStruct, message_error error){
 
 	defer func() {
 		if err:=recover();err!=nil{
