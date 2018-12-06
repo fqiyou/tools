@@ -61,7 +61,7 @@ func (msg *Message) ToMessage(msg_string string){
 	}
 	message_body_base64_gz,err := GzipDecode(message_body_base64)
 	if err != nil {
-		log.Error("非gzip格式",err)
+		//log.Error("非gzip格式",err)
 		msg_body_string = string(message_body_base64)
 	}else {
 		msg_body_string = string(message_body_base64_gz)
