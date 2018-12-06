@@ -29,10 +29,10 @@ const (
 	ERROR_INFO_MEG_LENGTH = "消息体长度小于8"
 	ERROR_INFO_MSG_HEAD_LENGTH = "消息头长度不足"
 )
-var (
-	wg    sync.WaitGroup
-	mutex sync.Mutex
-)
+
+func NewMessage() *Message {
+	return &Message{}
+}
 
 
 func (msg *Message) ToMessage(msg_string string){
@@ -90,6 +90,7 @@ func (msg *Message) ToMessage(msg_string string){
 
 
 func (msg *Message) ToMessageList(msg_string string){
+	var wg    sync.WaitGroup
 	defer func() {
 		if err:=recover();err!=nil{
 			log.Error(err)
@@ -101,6 +102,20 @@ func (msg *Message) ToMessageList(msg_string string){
 		log.Error(msg.MessageErrorInfo)
 		return
 	}
+	//
+	//
+	//for index , _ := range msg.MessageInfo.MsgBodyMapList {
+	//	msg_all_info := make(map[string]interface{})
+	//	for key, value := range msg.MessageInfo.MsgHeadMap {
+	//		msg_all_info[key] = value
+	//	}
+	//	msg_all_info["content"] = msg.MessageInfo.MsgBodyMapList[index]
+	//	msg_all_info["$event"] = msg.MessageInfo.MsgBodyMapList[index]["event"]
+	//	msg_all_info["$type"] = msg.MessageInfo.MsgBodyMapList[index]["type"]
+	//	msg_all_info["uuid"] = util.NewUUID()
+	//	msg.MessageList = append(msg.MessageList,msg_all_info)
+	//}
+	ch := make(chan map[string]interface{})
 
 	for index , _ := range msg.MessageInfo.MsgBodyMapList {
 		wg.Add(1)
@@ -113,11 +128,15 @@ func (msg *Message) ToMessageList(msg_string string){
 			msg_all_info["$event"] = msg.MessageInfo.MsgBodyMapList[index]["event"]
 			msg_all_info["$type"] = msg.MessageInfo.MsgBodyMapList[index]["type"]
 			msg_all_info["uuid"] = util.NewUUID()
-			mutex.Lock()
-			msg.MessageList = append(msg.MessageList,msg_all_info)
-			mutex.Unlock()
-			wg.Done()
+			ch <- msg_all_info
+			defer wg.Done()
 		}()
+	}
+	go func() {
 		wg.Wait()
+		close(ch)
+	}()
+	for v := range ch {
+		msg.MessageList = append(msg.MessageList,v)
 	}
 }
