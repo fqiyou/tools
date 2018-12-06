@@ -111,6 +111,7 @@ func (msg *Message) ToMessageList(msg_string string){
 			}
 			msg_all_info["content"] = msg.MessageInfo.MsgBodyMapList[index]
 			msg_all_info["$event"] = msg.MessageInfo.MsgBodyMapList[index]["event"]
+			msg_all_info["$type"] = msg.MessageInfo.MsgBodyMapList[index]["type"]
 			msg_all_info["uuid"] = util.NewUUID()
 			mutex.Lock()
 			msg.MessageList = append(msg.MessageList,msg_all_info)
