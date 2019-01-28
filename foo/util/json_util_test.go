@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -20,7 +19,7 @@ func TestJsonPrint(t *testing.T) {
 func TestModelToString(t *testing.T) {
 	user := User{Id:1,Name:"测试"}
 	a := ModelToString(user)
-	fmt.Println(a)
+	Log.Info(a)
 }
 
 
@@ -32,11 +31,10 @@ func TestMapToStruts(t *testing.T){
 	map_object["name"] = "yc"
 	map_object["Id"] = 21
 	map_object["last_name"] = "yang chao"
-
 	user := new(User)
 	err := MapToStruts(map_object,&user)
-	fmt.Println(err)
-	fmt.Println(user.LastName)
+	Log.Info(err)
+	Log.Info(user.LastName)
 	JsonPrint(map_object)
 
 }

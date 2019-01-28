@@ -9,6 +9,7 @@ import (
 func JsonPrint(model interface{})  {
 	ba,_ := json.Marshal(model)
 	fmt.Println(string(ba))
+	//Log.Info(string(ba))
 }
 
 func ModelToString(model interface{}) string {

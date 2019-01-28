@@ -1,8 +1,6 @@
 package util
 
 import (
-	"fmt"
-	"log"
 	"testing"
 )
 
@@ -29,16 +27,8 @@ func TestGetYamlConfig(t *testing.T)  {
 	conf := new(YamlDbConf)
 	_, err := GetYamlConfig("/Users/chaoyang/GoProject/src/github.com/fqiyou/tools/foo/conf/db_conf.yaml",&conf)
 	if err != nil {
-		log.Printf("err: %v",err)
+		Log.Fatal(err)
 		return
 	}
 	JsonPrint(conf)
-}
-
-
-
-func ExamplePrintln() {
-	fmt.Println("The output of\nthis example.")
-	// Output: The output of
-	// this example.
 }

@@ -16,3 +16,5 @@
 /vendor/*
 !/vendor/vendor.json
 # govendor sync
+glide.yaml
+glide.lock

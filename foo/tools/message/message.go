@@ -1,11 +1,13 @@
 package message
 
 import (
+	"bytes"
+	"compress/gzip"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"github.com/fqiyou/tools/foo/tools/logs"
 	"github.com/fqiyou/tools/foo/util"
+	"io/ioutil"
 	"strconv"
 	"sync"
 )
@@ -25,6 +27,16 @@ type MessageDecode struct {
 type MessageList [] map[string]interface{}
 
 
+
+func GzipDecode(in []byte) ([]byte, error) {
+	reader, err := gzip.NewReader(bytes.NewReader(in))
+	if err != nil {
+		var out []byte
+		return out, err
+	}
+	defer reader.Close()
+	return ioutil.ReadAll(reader)
+}
 
 const (
 	MESSAGE_HEAD_INFO_LENGTH = 8
@@ -63,7 +75,7 @@ func (msg *Message) ToMessage(msg_string string) MessageDecode{
 	}
 	message_body_base64_gz,err := GzipDecode(message_body_base64)
 	if err != nil {
-		log.Info("非gzip格式",err)
+		util.Log.Warn("非gzip格式",err)
 		msg_body_string = string(message_body_base64)
 	}else {
 		msg_body_string = string(message_body_base64_gz)
@@ -94,28 +106,15 @@ func (msg *Message) ToMessageList(msg_string string) MessageList{
 	var wg    sync.WaitGroup
 	defer func() {
 		if err:=recover();err!=nil{
-			log.Error(err)
+			util.Log.Error(err)
 
 		}
 	}()
 	msg_decode := msg.ToMessage(msg_string)
 	if msg_decode.MessageErrorInfo != nil{
-		log.Error(msg_decode.MessageErrorInfo)
+		util.Log.Error(msg_decode.MessageErrorInfo)
 		return msg_list
 	}
-	//
-	//
-	//for index , _ := range msg.MessageInfo.MsgBodyMapList {
-	//	msg_all_info := make(map[string]interface{})
-	//	for key, value := range msg.MessageInfo.MsgHeadMap {
-	//		msg_all_info[key] = value
-	//	}
-	//	msg_all_info["content"] = msg.MessageInfo.MsgBodyMapList[index]
-	//	msg_all_info["$event"] = msg.MessageInfo.MsgBodyMapList[index]["event"]
-	//	msg_all_info["$type"] = msg.MessageInfo.MsgBodyMapList[index]["type"]
-	//	msg_all_info["uuid"] = util.NewUUID()
-	//	msg.MessageList = append(msg.MessageList,msg_all_info)
-	//}
 	ch := make(chan map[string]interface{})
 
 	for index , _ := range msg_decode.MessageInfo.MsgBodyMapList {
