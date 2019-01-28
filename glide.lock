@@ -1,0 +1,37 @@
+hash: f4afd99694078aa8a28f09b55708baaeb15d32a263b97d540b8661168a96b9c9
+updated: 2019-01-28T18:03:11.834869+08:00
+imports:
+- name: github.com/bsm/sarama-cluster
+  version: c618e605e15c0d7535f6c96ff8efbb0dba4fd66c
+- name: github.com/konsorten/go-windows-terminal-sequences
+  version: 5c8c8bd35d3832f5d134ae1e1e375b69a4d25242
+- name: github.com/lestrrat/go-file-rotatelogs
+  version: d3151e2a480fdcd05fb97102f5310a47d96274c4
+- name: github.com/lestrrat/go-strftime
+  version: ba3bf9c1d0421aa146564a632931730344f1f9f1
+- name: github.com/mitchellh/mapstructure
+  version: 3536a929edddb9a5b34bd6861dc4a9647cb459fe
+- name: github.com/pkg/errors
+  version: ffb6e22f01932bf7ac35e0bad9be11f01d1c8685
+- name: github.com/rifflock/lfshook
+  version: b9218ef580f59a2e72dad1aa33d660150445d05a
+- name: github.com/satori/go.uuid
+  version: f58768cc1a7a7e77a3bd49e98cdd21419399b6a3
+- name: github.com/shiena/ansicolor
+  version: a422bbe96644373c5753384a59d678f7d261ff10
+- name: github.com/Shopify/sarama
+  version: 03a43f93cd29dc549e6d9b11892795c206f9c38c
+- name: github.com/sirupsen/logrus
+  version: 7d8d63893b994a654b3bc8d16ffd7fb6b9f884a4
+- name: golang.org/x/crypto
+  version: 057139ce5d2bdbe6fe73c53679e24e9cf007f637
+  subpackages:
+  - ssh/terminal
+- name: golang.org/x/sys
+  version: b90733256f2e882e81d52f9126de08df5615afd9
+  subpackages:
+  - unix
+  - windows
+- name: gopkg.in/yaml.v2
+  version: 51d6538a90f86fe93ac480b35f37b2be17fef232
+testImports: []

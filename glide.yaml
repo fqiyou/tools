@@ -1,0 +1,12 @@
+package: github.com/fqiyou/tools
+import:
+- package: github.com/Shopify/sarama
+  version: ^1.20.1
+- package: github.com/bsm/sarama-cluster
+  version: ^2.1.15
+- package: github.com/mitchellh/mapstructure
+  version: ^1.1.2
+- package: github.com/satori/go.uuid
+  version: ^1.2.0
+- package: gopkg.in/yaml.v2
+  version: ^2.2.2
