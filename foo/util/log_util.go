@@ -7,6 +7,8 @@ import (
 	"github.com/rifflock/lfshook"
 	"github.com/shiena/ansicolor"
 	"github.com/sirupsen/logrus"
+	logrus_syslog "github.com/sirupsen/logrus/hooks/syslog"
+	"log/syslog"
 	"os"
 	"path"
 	"runtime"
@@ -14,58 +16,46 @@ import (
 	"time"
 )
 
-type ContextHook struct {
-}
-
-func (hook ContextHook) Levels() []logrus.Level {
-	return logrus.AllLevels
-}
-func (hook ContextHook) Fire(entry *logrus.Entry) error {
-	if pc, file, line, ok := runtime.Caller(8); ok {
-		funcName := runtime.FuncForPC(pc).Name()
-		entry.Data["file"] = path.Base(file)
-		entry.Data["func"] = path.Base(funcName)
-		entry.Data["line"] = line
-	}
-	return nil
-}
-
-
 var Log *logrus.Logger
 
 
 func init() {
 	Log = logrus.New()
 	Log.SetLevel(logrus.InfoLevel)
+	Log.AddHook(NewFileRowHook())
 	Log.Formatter = &logrus.TextFormatter{
 		ForceColors: true,
 	}
+	//Log.Formatter = &logrus.JSONFormatter{}
+
 	Log.SetOutput(ansicolor.NewAnsiColorWriter(os.Stdout))
-	//ConfigLocalFilesystemLogger("", "std.log", time.Hour*24, time.Second*20)
 
-	//Log.AddHook(ContextHook{})
-	Log.AddHook(NewHook())
 
+	// file logger
+	// AddHookLocalFileLogger("", "std.log", time.Hour*24, time.Second*20, "%Y%m%d-%H")
+
+	// syslog logger
+	//AddHookSyslog("udp","spark003:514",syslog.LOG_LOCAL4,"")
 
 }
-
-func getLeaveWriter(leave string,logPath string, logFileName string,maxAge time.Duration,rotationTime time.Duration,formatTime string)  (*rotatelogs.RotateLogs, error){
-
-	baseLogPath := path.Join(logPath, leave + "-" + logFileName)
-	timeLogPath := path.Join(logPath,leave + "-"+logFileName+"."+formatTime) //formatTime = "%Y%m%d%H%M"
-	leaveWriter, err := rotatelogs.New(timeLogPath,
-		rotatelogs.WithLinkName(baseLogPath),// 生成软链，指向最新日志文件
-		rotatelogs.WithMaxAge(maxAge),// 文件最大保存时间
-		rotatelogs.WithRotationTime(rotationTime),// 日志切割时间间隔
-		)
-
+// 添加syslog hoot
+func AddHookSyslog(network string, raddr string, priority syslog.Priority, tag string)  {
+	hook, err := logrus_syslog.NewSyslogHook(network, raddr, priority, tag)
 	if err != nil {
-		Log.Errorf("config local file system logger error. %+v", errors.WithStack(err))
+		Log.Error(err)
 	}
-	return leaveWriter,err
+	if err == nil {
+		Log.Hooks.Add(hook)
+		Log.Formatter = &logrus.TextFormatter{
+			ForceColors: false,
+		}
+
+	}
 }
 
-func ConfigLocalFilesystemLogger(logPath string, logFileName string, maxAge time.Duration, rotationTime time.Duration,formatTime string) {
+
+// hook实现轮训写文件
+func AddHookLocalFileLogger(logPath string, logFileName string, maxAge time.Duration, rotationTime time.Duration,formatTime string) {
 
 	infoWriter, _ := getLeaveWriter("info",logPath,logFileName,maxAge,rotationTime,formatTime)
 	warnWriter, _ := getLeaveWriter("warn",logPath,logFileName,maxAge,rotationTime,formatTime)
@@ -79,28 +69,43 @@ func ConfigLocalFilesystemLogger(logPath string, logFileName string, maxAge time
 	},&logrus.JSONFormatter{})
 	Log.AddHook(lfHook)
 }
+func getLeaveWriter(leave string,logPath string, logFileName string,maxAge time.Duration,rotationTime time.Duration,formatTime string)  (*rotatelogs.RotateLogs, error){
+
+	baseLogPath := path.Join(logPath, leave + "-" + logFileName)
+	timeLogPath := path.Join(logPath,leave + "-"+logFileName+"."+formatTime) //formatTime = "%Y%m%d%H%M"
+	leaveWriter, err := rotatelogs.New(timeLogPath,
+		rotatelogs.WithLinkName(baseLogPath),// 生成软链，指向最新日志文件
+		rotatelogs.WithMaxAge(maxAge),// 文件最大保存时间
+		rotatelogs.WithRotationTime(rotationTime),// 日志切割时间间隔
+	)
+
+	if err != nil {
+		Log.Errorf("config local file system logger error. %+v", errors.WithStack(err))
+	}
+	return leaveWriter,err
+}
 
 
 
 // hook实现行号
-type Hook struct {
+type FileRowHook struct {
 	Field     string
 	Skip      int
 	levels    []logrus.Level
 	Formatter func(file, function string, line int) string
 }
 
-func (hook *Hook) Levels() []logrus.Level {
+func (hook *FileRowHook) Levels() []logrus.Level {
 	return hook.levels
 }
 
-func (hook *Hook) Fire(entry *logrus.Entry) error {
+func (hook *FileRowHook) Fire(entry *logrus.Entry) error {
 	entry.Data[hook.Field] = hook.Formatter(findCaller(hook.Skip))
 	return nil
 }
 
-func NewHook(levels ...logrus.Level) *Hook {
-	hook := Hook{
+func NewFileRowHook(levels ...logrus.Level) *FileRowHook {
+	hook := FileRowHook{
 		Field:  "source",
 		Skip:   5,
 		levels: levels,
