@@ -29,7 +29,7 @@ func NewKafkaConsumer() *KafkaConsumer {
 }
 
 func (k *KafkaConsumer) Init() error {
-	k.msgs = make(chan []byte, 300000)
+	k.msgs = make(chan []byte, 10000)
 	k.stopped = make(chan struct{})
 	return nil
 }
