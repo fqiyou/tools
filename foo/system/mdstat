@@ -1,0 +1,9 @@
+Personalities : [raid10]
+md0 : active raid10 sdh[5] sdg[4] sdf[3] sde[2] sdd[1] sdc[0]
+      11720658432 blocks super 1.2 512K chunks 2 near-copies [6/6] [UUUUUU]
+      bitmap: 0/88 pages [0KB], 65536KB chunk
+md2 : active raid10 sdh[5] sdg[4] sdf[3] sde[2] sdd[1] sdc[0]
+      11720658432 blocks super 1.2 512K chunks 2 near-copies [6/6] [UUUUUU]
+      bitmap: 0/88 pages [0KB], 65536KB chunk
+
+unused devices: <none>
