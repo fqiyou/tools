@@ -18,3 +18,4 @@
 # govendor sync
 # glide.yaml
 # glide.lock
+/bin/*
