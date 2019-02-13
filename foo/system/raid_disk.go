@@ -29,7 +29,7 @@ type RaidDisk struct {
 func (this *RaidDisk) Collect() error {
 
 	//cmd := "cat /Users/chaoyang/GoProject/src/github.com/fqiyou/tools/foo/system/mdstat |grep md|awk -F \":\" '{print $1}'"
-	cmd := "mdstat |grep md|awk -F \":\" '{print $1}'"
+	cmd := "cat /proc/mdstat |grep md|awk -F \":\" '{print $1}'"
 	output, err := Exec(cmd)
 	if err != nil {
 		util.Log.Error(err)
@@ -87,7 +87,7 @@ func getRaidDiskInfo(mount string) RaidDiskSystemInfo {
 func getMdadmCmd(args string,mount string) string{
 	//cmd := "cat /Users/chaoyang/GoProject/src/github.com/fqiyou/tools/foo/system/mdadm_cmd |grep \"" + args + "\"|awk -F \":\" '{print $2}' |tr -d \" \""
 
-	cmd := "mdadm -D /dev/" + mount + " |grep \"" + args + "\"|awk -F \":\" '{print $2}' |tr -d \" \""
+	cmd := "/sbin/mdadm -D /dev/" + mount + " |grep \"" + args + "\"|awk -F \":\" '{print $2}' |tr -d \" \""
 
 	return cmd
 }

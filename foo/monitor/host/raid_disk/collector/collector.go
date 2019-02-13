@@ -11,9 +11,9 @@
 package collector
 
 import (
-	"sync"
+	"github.com/fqiyou/tools/foo/system"
 	"github.com/prometheus/client_golang/prometheus"
-	"math/rand"
+	"sync"
 )
 
 // 指标结构体
@@ -38,9 +38,23 @@ func newGlobalMetric(namespace string, metricName string, docString string, labe
 func NewMetrics(namespace string) *Metrics {
 	return &Metrics{
 		metrics: map[string]*prometheus.Desc{
-			"my_counter_metric": newGlobalMetric(namespace, "my_counter_metric", "The description of my_counter_metric", []string{"host"}),
-			"my_gauge_metric": newGlobalMetric(namespace, "my_gauge_metric","The description of my_gauge_metric", []string{"host"}),
+			"disk_raid_monitor_raid_devices": newGlobalMetric(namespace, "disk_raid_monitor_raid_devices",
+				"The description of disk_raid_monitor_raid_devices",[]string{"hostname","raidname","raidlevel","version"}),
+			"disk_raid_monitor_total_devices": newGlobalMetric(namespace, "disk_raid_monitor_total_devices",
+				"The description of disk_raid_monitor_total_devices",[]string{"hostname","raidname","raidlevel","version"}),
+			"disk_raid_monitor_active_devices": newGlobalMetric(namespace, "disk_raid_monitor_active_devices",
+				"The description of disk_raid_monitor_active_devices",[]string{"hostname","raidname","raidlevel","version"}),
+			"disk_raid_monitor_working_devices": newGlobalMetric(namespace, "disk_raid_monitor_working_devices",
+				"The description of disk_raid_monitor_working_devices",[]string{"hostname","raidname","raidlevel","version"}),
+			"disk_raid_monitor_failed_devices": newGlobalMetric(namespace, "disk_raid_monitor_failed_devices",
+				"The description of disk_raid_monitor_failed_devices",[]string{"hostname","raidname","raidlevel","version"}),
+			"disk_raid_monitor_spare_devices": newGlobalMetric(namespace, "disk_raid_monitor_spare_devices",
+				"The description of disk_raid_monitor_spare_devices",[]string{"hostname","raidname","raidlevel","version"}),
+			"disk_raid_test": newGlobalMetric(namespace, "disk_raid_test",
+				"The description of disk_raid_test",[]string{"hostname"}),
+
 		},
+
 	}
 }
 
@@ -54,6 +68,7 @@ func (c *Metrics) Describe(ch chan<- *prometheus.Desc) {
 	}
 }
 
+
 /**
  * 接口：Collect
  * 功能：抓取最新的数据，传递给channel
@@ -62,29 +77,49 @@ func (c *Metrics) Collect(ch chan<- prometheus.Metric) {
 	c.mutex.Lock()  // 加锁
 	defer c.mutex.Unlock()
 
-	mockCounterMetricData, mockGaugeMetricData := c.GenerateMockData()
-	for host, currentValue := range mockCounterMetricData {
-		ch <-prometheus.MustNewConstMetric(c.metrics["my_counter_metric"], prometheus.CounterValue, float64(currentValue), host)
-	}
-	for host, currentValue := range mockGaugeMetricData {
-		ch <-prometheus.MustNewConstMetric(c.metrics["my_gauge_metric"], prometheus.GaugeValue, float64(currentValue), host)
-	}
-}
+	//mockCounterMetricData, mockGaugeMetricData := c.GenerateMockData()
+
+	info := system.RaidDisk{}
+	info.Collect()
+	for _,v := range info.RaidDiskSystemInfo{
+
+		ch <-prometheus.MustNewConstMetric(c.metrics["disk_raid_monitor_raid_devices"], prometheus.GaugeValue, float64(v.RaidDevices),
+			info.HostName,
+			v.RaidName,v.RaidLevel,v.Version,
+		)
+
+		ch <-prometheus.MustNewConstMetric(c.metrics["disk_raid_monitor_total_devices"], prometheus.GaugeValue, float64(v.TotalDevices),
+			info.HostName,
+			v.RaidName,v.RaidLevel,v.Version,
+		)
+
+		ch <-prometheus.MustNewConstMetric(c.metrics["disk_raid_monitor_active_devices"], prometheus.GaugeValue, float64(v.ActiveDevices),
+			info.HostName,
+			v.RaidName,v.RaidLevel,v.Version,
+		)
+
+		ch <-prometheus.MustNewConstMetric(c.metrics["disk_raid_monitor_working_devices"], prometheus.GaugeValue, float64(v.WorkingDevices),
+			info.HostName,
+			v.RaidName,v.RaidLevel,v.Version,
+		)
+
+		ch <-prometheus.MustNewConstMetric(c.metrics["disk_raid_monitor_failed_devices"], prometheus.GaugeValue, float64(v.FailedDevices),
+			info.HostName,
+			v.RaidName,v.RaidLevel,v.Version,
+		)
+
+		ch <-prometheus.MustNewConstMetric(c.metrics["disk_raid_monitor_spare_devices"], prometheus.GaugeValue, float64(v.SpareDevices),
+			info.HostName,
+			v.RaidName,v.RaidLevel,v.Version,
+		)
 
 
-/**
- * 函数：GenerateMockData
- * 功能：生成模拟数据
- */
-func (c *Metrics) GenerateMockData() (mockCounterMetricData map[string]int, mockGaugeMetricData map[string]int) {
-	mockCounterMetricData = map[string]int{
-		"yahoo.com": int(rand.Int31n(1000)),
-		"google.com": int(rand.Int31n(1000)),
 	}
-	mockGaugeMetricData = map[string]int{
-		"yahoo.com": int(rand.Int31n(10)),
-		"google.com": int(rand.Int31n(10)),
-	}
-	return
+	ch <-prometheus.MustNewConstMetric(c.metrics["disk_raid_test"], prometheus.GaugeValue, float64(111),
+		info.HostName,
+	)
+
+
+
 }
 
