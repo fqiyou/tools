@@ -1,7 +1,7 @@
 #### raid disk 说明
->根据华为云的shell脚本改写的。由于目前我们使用监控为 xx_export+prometheus+grafana,故开发raid_disk_export
+>根据华为云的shell脚本改写的。由于目前我们使用监控为 xx_exporter+prometheus+grafana,故开发raid_disk_exporter
 
-##### raid_disk_export地址
+##### raid_disk_exporter地址
 
 ```cgo
 https://github.com/fqiyou/tools/blob/master/foo/monitor/host/raid_disk/main.go

@@ -13,7 +13,7 @@ glide install
 
 
 #### 使用
-1. 监控export
+1. 监控exporter
     1. raid 磁盘监控
     ```cgo
     # raid 磁盘监控,打包
