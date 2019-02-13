@@ -2,9 +2,7 @@
 
 #### 项目搭建
 ```cgo
-
 govendor sync
-
 govendor init
 
 glide init
