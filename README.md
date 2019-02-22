@@ -21,7 +21,7 @@ glide install
     
     ```
     ```cgo
-    [root@bj-sjs-009 raid]# ./raid_disk --help
+    [root@xxx-xxx-xxx raid]# ./raid_disk --help
     Usage of ./raid_disk:
       -metric.namespace string
             Prometheus metrics namespace, as the prefix of metrics name (default "sjs")
@@ -29,7 +29,7 @@ glide install
             An port to listen on for web interface and telemetry. (default "9001")
       -web.telemetry-path string
             A path under which to expose metrics. (default "/metrics")
-    [root@bj-sjs-009 raid]# /opt/soft/monitor/raid/raid_disk   --metric.namespace sjs --web.listen-port 9992 --web.telemetry-path /metrics
+    [root@xxx-xxx-xxx raid]# /opt/soft/monitor/raid/raid_disk   --metric.namespace sjs --web.listen-port 9992 --web.telemetry-path /metrics
     INFO[0000] Starting Server at http://localhost:9992/metrics  source="raid_disk/main.go:41"
 
     ```
